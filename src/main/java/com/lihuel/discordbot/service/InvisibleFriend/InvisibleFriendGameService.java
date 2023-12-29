@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 @Service
@@ -62,8 +63,28 @@ public class InvisibleFriendGameService {
         game.getGroups().remove(groupId);
         return invisibleFriendGameRepository.save(game);
     }
-    public InvisibleFriendGame startGame(String guildId) {
-        return null;
+    public InvisibleFriendGame startGame(String guildId) throws InvisibleFriendGameNotFoundException {
+        InvisibleFriendGame game = invisibleFriendGameRepository.findByGuildIdAndStatus(guildId, GameStatus.CREATED).orElseThrow(() -> new InvisibleFriendGameNotFoundException("No hay ninguna partida creada para este servidor o la partida ya ha comenzado"));
+        List<List<InvisibleFriendUser>> groups = game.getGroups();
+        for (List<InvisibleFriendUser> group : groups) {
+            assignFriends(group);
+        }
+        game.setStatus(GameStatus.STARTED);
+        return invisibleFriendGameRepository.save(game);
+    }
+
+    private void assignFriends(List<InvisibleFriendUser> users) {
+        List<InvisibleFriendUser> unassignedUsers = new ArrayList<>(List.copyOf(users));
+        for (int i = 0; i < users.size() ; i++) {
+            InvisibleFriendUser user = users.get(i);
+            InvisibleFriendUser friend = unassignedUsers.get( (int) (Math.random() * unassignedUsers.size()));
+            if (user.getUserId().equals(friend.getUserId())) {
+                i--;
+                continue;
+            }
+            user.setFriendId(friend.getUserId());
+            unassignedUsers.remove(friend);
+        }
     }
 
     public InvisibleFriendGame endGame(String guildId) throws InvisibleFriendGameNotFoundException {
