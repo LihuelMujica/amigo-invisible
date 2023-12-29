@@ -1,6 +1,7 @@
 package com.lihuel.discordbot.discord.commands.invisiblefriend;
 
 import com.lihuel.discordbot.discord.commands.Command;
+import com.lihuel.discordbot.discord.utils.embeds.InvisibleFriendEmbed;
 import com.lihuel.discordbot.entity.InvisibleFriendGame;
 import com.lihuel.discordbot.service.InvisibleFriend.InvisibleFriendGameService;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -65,6 +66,6 @@ public class InvisibleFriendCreateGroup implements Command {
                 .map(option -> option.getAsUser().getId())
                 .toList();
         InvisibleFriendGame game = invisibleFriendGameService.addGroup(event.getGuild().getId(), players);
-        event.reply(game.toString()).queue();
+        event.replyEmbeds(InvisibleFriendEmbed.GameInfoEmbed(game)).queue();
     }
 }

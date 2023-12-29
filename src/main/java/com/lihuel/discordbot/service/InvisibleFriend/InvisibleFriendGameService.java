@@ -75,8 +75,15 @@ public class InvisibleFriendGameService {
         return null;
     }
 
-    public InvisibleFriendGame endGame(String guildId) {
-        return null;
+    public InvisibleFriendGame endGame(String guildId) throws InvisibleFriendGameNotFoundException {
+        InvisibleFriendGame game = invisibleFriendGameRepository.findByGuildIdAndStatus(guildId, GameStatus.STARTED).orElse(
+                invisibleFriendGameRepository.findByGuildIdAndStatus(guildId, GameStatus.CREATED).orElse(null)
+        );
+        if (game == null) {
+            throw new InvisibleFriendGameNotFoundException("No hay ninguna partida creada o en curso para este servidor");
+        }
+        game.setStatus(GameStatus.FINISHED);
+        return invisibleFriendGameRepository.save(game);
     }
 
     public InvisibleFriendGame sendGift(String guildId, String userId, String gift) {
