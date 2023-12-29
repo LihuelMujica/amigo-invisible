@@ -1,6 +1,7 @@
 package com.lihuel.discordbot.discord;
 
 import com.lihuel.discordbot.discord.commands.Command;
+import com.lihuel.discordbot.discord.utils.embeds.AlertEmbed;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -49,9 +50,20 @@ public class CommandManager extends ListenerAdapter {
         for (Command command : commands) {
             if (event.getName().equals(command.getName())) {
                 log.info("Executing command: {}", command.getName());
-                command.execute(event);
+                executeCommand(command, event);
                 return;
             }
+        }
+    }
+
+    private void executeCommand(Command command, SlashCommandInteractionEvent event) {
+        try {
+            log.info("Executing command: {}", command.getName());
+            command.execute(event);
+        }
+        catch (Exception e) {
+            log.error("Error executing command: {}", command.getName(), e);
+            event.replyEmbeds(AlertEmbed.createError(e.getMessage())).setEphemeral(true).queue();
         }
     }
 }
