@@ -12,6 +12,6 @@ import java.util.Optional;
 public interface InvisibleFriendGameRepository extends MongoRepository<InvisibleFriendGame, String> {
     Optional<InvisibleFriendGame> findByGuildIdAndStatus(String guildId, GameStatus gameStatus);
 
-    @Query(value = "{ 'guildId' : ?0, 'groups' : { $elemMatch : { $elemMatch : { 'userId' : ?1 } } } }", exists = true)
+    @Query(value = "{ 'guildId' : ?0, 'status' : { $in: [ 'CREATED', 'STARTED' ] }, 'groups' : { $elemMatch: { 'users' : { $elemMatch: { 'userId' : ?1 } } } } }", exists = true)
     boolean playerIsInGame(String guildId, String userId);
 }
