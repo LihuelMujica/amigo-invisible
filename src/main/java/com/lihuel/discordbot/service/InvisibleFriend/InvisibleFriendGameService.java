@@ -42,15 +42,6 @@ public class InvisibleFriendGameService {
         }
         return invisibleFriendGame;
     }
-
-    public InvisibleFriendGame createGroup(String guildId) {
-        return null;
-    }
-
-    public List<List<InvisibleFriendUser>> getGroups(String guildId) {
-        return null;
-    }
-
     public InvisibleFriendGame addGroup(String guildId, List<String> userIds) throws InvisibleFriendGameNotFoundException, InvisibleFriendGameAlreadyExistsException {
         InvisibleFriendGame invisibleFriendGame = invisibleFriendGameRepository.findByGuildIdAndStatus(guildId, GameStatus.CREATED).orElseThrow(() -> new InvisibleFriendGameNotFoundException("No hay ninguna partida creada para este servidor o la partida ya ha comenzado"));
         List<InvisibleFriendUser> users = new ArrayList<>();
