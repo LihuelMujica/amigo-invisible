@@ -41,4 +41,18 @@ public class InvisibleFriendEmbed {
             default -> "Desconocido";
         };
     }
+
+    public static @NotNull MessageEmbed giftEmbed(String title, String body, String imgURL) {
+        if (title == null || title.isEmpty()) {
+            title = "Regalito de tu amigo invisible";
+        }
+        if (imgURL == null || imgURL.isEmpty()) {
+            imgURL = "https://cdn.discordapp.com/attachments/829134660533616692/1190405649381736518/FkllZn7X0AAU56j.png?ex=65a1aea7&is=658f39a7&hm=425c69315f8406933f6a3fd02d8ef49156b0e6274caf6eae957b63bad65e8b84&";
+        }
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        embedBuilder.setTitle(title);
+        embedBuilder.setDescription(body);
+        embedBuilder.setImage(imgURL);
+        return embedBuilder.build();
+    }
 }

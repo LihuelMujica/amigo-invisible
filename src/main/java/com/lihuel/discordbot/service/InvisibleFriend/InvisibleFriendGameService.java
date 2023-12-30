@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 @Service
@@ -98,8 +97,17 @@ public class InvisibleFriendGameService {
         return invisibleFriendGameRepository.save(game);
     }
 
-    public InvisibleFriendGame sendGift(String guildId, String userId, String gift) {
-        return null;
+    public InvisibleFriendGame sendGift(String guildId, String userId, InvisibleFriendGift gift) throws InvisibleFriendGameNotFoundException {
+        InvisibleFriendGame game = invisibleFriendGameRepository.findByGuildIdAndStatus(guildId, GameStatus.STARTED).orElseThrow(() -> new InvisibleFriendGameNotFoundException("No hay ninguna en curso para este servidor"));
+        for (List<InvisibleFriendUser> group : game.getGroups()) {
+            for (InvisibleFriendUser user : group) {
+                if (user.getUserId().equals(userId)) {
+                    user.setGiftSent(gift);
+                    return invisibleFriendGameRepository.save(game);
+                }
+            }
+        }
+        throw new InvisibleFriendGameNotFoundException("El usuario <@" + userId + "> no está en la partida");
     }
 
     public Map<String, InvisibleFriendGift> getGifts(String guildId) {
