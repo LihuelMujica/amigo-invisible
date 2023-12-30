@@ -26,6 +26,9 @@ public class ModalListener extends ListenerAdapter {
             String body = event.getValue("body").getAsString();
             String imgURL = event.getValue("imgURL").getAsString();
             InvisibleFriendGift gift = new InvisibleFriendGift();
+            gift.setTitle(title);
+            gift.setBody(body);
+            gift.setImgURL(imgURL);
             event.deferReply().setEphemeral(true).queue();
             try {
                 invisibleFriendGameService.sendGift(event.getGuild().getId(), event.getUser().getId(), gift);

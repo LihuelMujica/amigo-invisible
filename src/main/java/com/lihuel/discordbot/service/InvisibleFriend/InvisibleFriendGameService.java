@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 @Service
 public class InvisibleFriendGameService {
     private final InvisibleFriendGameRepository invisibleFriendGameRepository;
@@ -102,6 +101,7 @@ public class InvisibleFriendGameService {
         for (List<InvisibleFriendUser> group : game.getGroups()) {
             for (InvisibleFriendUser user : group) {
                 if (user.getUserId().equals(userId)) {
+                    gift.setReceiverId(user.getFriendId());
                     user.setGiftSent(gift);
                     return invisibleFriendGameRepository.save(game);
                 }
@@ -110,8 +110,29 @@ public class InvisibleFriendGameService {
         throw new InvisibleFriendGameNotFoundException("El usuario <@" + userId + "> no está en la partida");
     }
 
-    public Map<String, InvisibleFriendGift> getGifts(String guildId) {
-        return null;
+    public List<InvisibleFriendGift> getGifts(String guildId) throws InvisibleFriendGameNotFoundException {
+        InvisibleFriendGame game = getGame(guildId);
+        List<InvisibleFriendGift> gifts = new ArrayList<>();
+        System.out.println(game.getGroups());
+        game.getGroups().forEach(group -> group.forEach(user -> {
+            if (user.getGiftSent() == null ) {
+                InvisibleFriendGift gift = new InvisibleFriendGift();
+                gift.setReceiverId(user.getFriendId());
+                gift.setTitle("EL VERDADERO AMIGO INVISIBLE");
+                gift.setBody("El verdadero amigo invisible es el que no te regala nada. Lo vamos a funar en Twitter.");
+                gift.setImgURL("https://imgs.search.brave.com/qBt8iHMCzCFRi_anS5vBW3LIeQOGKSgXHorS-DO7AdU/rs:fit:860:0:0/g:ce/aHR0cHM6Ly93d3cu/ZWx0aWVtcG8uY29t/L2ZpbGVzL2FydGlj/bGVfbWFpbl8xMjAw/L3VwbG9hZHMvMjAy/My8wMi8wNi82M2Ux/NzZiNDBjYWY5LnBu/Zw");
+                gifts.add(gift);
+                return;
+            }
+            gifts.add(user.getGiftSent());
+        }));
+        return gifts;
+    }
+
+    public void resetGifts(String guildId) throws InvisibleFriendGameNotFoundException {
+        InvisibleFriendGame game = getGame(guildId);
+        game.getGroups().forEach(group -> group.forEach(user -> user.setGiftSent(null)));
+        invisibleFriendGameRepository.save(game);
     }
 
 }
